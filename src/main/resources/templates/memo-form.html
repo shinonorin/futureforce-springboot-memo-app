@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <title th:text="${memo.id} != null ? 'メモ編集' : 'メモ作成'"></title>
@@ -9,14 +8,12 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
 </head>
-
 <body>
     <div class="container">
         <div class="header">
             <h1 class="app-title" th:text="${memo.id} != null ? 'メモ編集' : 'メモ作成'"></h1>
             <a th:href="${memo.id} != null ? @{|/memos/detail/${memo.id}|}  : @{/memos}" class="btn btn-outline"><i class="ri-arrow-left-line"></i> 戻る</a>
         </div>
-
         <div class="note-form-card">
             <form th:action="${memo.id} != null ? @{|/memos/update/${memo.id}|} : @{/memos/create}" th:object="${memo}" method="post">        
                 <div class="form-group">
@@ -24,13 +21,26 @@
                     <input type="text" th:field="*{title}">
                     <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-message"></div>
                 </div>
-
+				<!-- 優先度の選択 -->
+				<div class="form-group">
+				    <label>優先度 <span>（必須）</span></label>
+				    <div class="priority-group">
+						<!-- priorityから値を１つずつ取り出してラジオボタンを生成 -->
+						<label th:each="p:${priorities}" class="priority-pill" th:classappend="${p.name().toLowerCase()}">
+							<input type="radio" class="priority-radio" th:field="*{priority}" th:value="${p}">
+							<span th:text="${p.name() == 'HIGH' ? '高' : (p.name() == 'MEDIUM' ? '中' : '低')}"></span>
+						</label>
+				    </div>
+				    <!-- 未選択時のエラーメッセージ -->
+				    <div th:if="${#fields.hasErrors('priority')}"
+				         th:errors="*{priority}"
+				         class="error-message"></div>
+				</div>
                 <div class="form-group">
                     <label>内容：</label>
                     <textarea th:field="*{content}"></textarea>
                     <div th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="error-message"></div>
                 </div>
-
                 <div class="form-button-container">
                     <button type="submit" class="btn btn-primary" th:text="${memo.id} != null ? '更新' : '作成'">作成</button>
                 </div>
@@ -39,5 +49,4 @@
     </div>
     <script th:src="@{/js/common.js}"></script>
 </body>
-
 </html>

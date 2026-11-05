@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.lesson.memo.model.Memo;
+import com.lesson.memo.model.Priority;
 import com.lesson.memo.repository.MemoRepository;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,6 +32,9 @@ public class MemoController {
     @GetMapping
     public String list(Model model) {
         List<Memo> memos = memoRepository.findAll();
+//        並び替え、優先度が高い順、Enumの定義の順番で０，１，２～sortが順番通りにしてくれてる　compareTo比較するメソッド
+//        a.getPriority()とはPriorityのaの値を引っ張ってきている。aとbのpriorityを比較して
+        memos.sort((a, b) -> a.getPriority().compareTo(b.getPriority()));
         model.addAttribute("memos", memos);
         return "memo-list";
     }
@@ -38,18 +42,21 @@ public class MemoController {
     @GetMapping("/new")
     public String showForm(Model model) {
         model.addAttribute("memo", new Memo());
+        model.addAttribute("priorities", Priority.values());
         return "memo-form";
     }
 
     @PostMapping("/create")
     public String create(@ModelAttribute @Valid Memo memo,
-            BindingResult result) {
+            BindingResult result,Model model) {
         if (result.hasErrors()) {
+        	model.addAttribute("priorities", Priority.values());
             return "memo-form";
         }
 
         memo.setCreatedAt(LocalDateTime.now());
         memo.setUpdatedAt(LocalDateTime.now());
+//        ここで↓DBに値を保存
         memoRepository.save(memo);
         return "redirect:/memos";
     }
@@ -69,6 +76,7 @@ public class MemoController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model, HttpServletResponse response) {
+    	model.addAttribute("priorities", Priority.values());
         if (model.containsAttribute("memo")) {
             return "memo-form";
         }
@@ -85,12 +93,13 @@ public class MemoController {
     }
 
     @PostMapping("/update/{id}")
-    public String update(@PathVariable Long id,
+    public String update(
+    		@PathVariable Long id,
             @ModelAttribute @Valid Memo memo,
             BindingResult result,
             HttpServletResponse response,
-            RedirectAttributes redirectAttributes) {
-
+            RedirectAttributes redirectAttributes
+    ) {
         Optional<Memo> opt = memoRepository.findById(id);
         if (opt.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -107,6 +116,7 @@ public class MemoController {
 
         memoToUpdate.setTitle(memo.getTitle());
         memoToUpdate.setContent(memo.getContent());
+        memoToUpdate.setPriority(memo.getPriority());
         memoToUpdate.setUpdatedAt(LocalDateTime.now());
         memoRepository.save(memoToUpdate);
 
