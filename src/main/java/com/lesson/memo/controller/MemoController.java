@@ -49,8 +49,6 @@ public class MemoController {
     @PostMapping("/create")
     public String create(@ModelAttribute @Valid Memo memo,
             BindingResult result,Model model) {
-    	  System.out.println("入力エラーがある？：" + result.hasErrors());
-    	  System.out.println("エラーの内容：" + result.getAllErrors());
         if (result.hasErrors()) {
         	model.addAttribute("priorities", Priority.values());
             return "memo-form";
