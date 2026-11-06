@@ -17,7 +17,11 @@
                 <i class="ri-add-circle-line"></i> 新規メモ
             </a>
         </div>
-
+		<!--検索フォーム-->
+		<form th:action="@{/memos/search}" method="get"> <!--検索キーワードの送信先、URLにキーワードをつけて送信-->
+			<input type="text" name="keyword" th:value="${keyword}" placeholder="タイトル・本文を検索"><!--placeholder入力欄に薄く表示する文-->
+			<button type="submit" class="btn btn-primary">検索</button>
+		</form>
         <div class="notes-grid">
             <div class="note-card" th:each="memo : ${memos}">
 				<div class="note-card-header">
@@ -42,7 +46,8 @@
         </div>
 
         <div th:if="${memos.isEmpty()}" class="empty-state">
-            <p>メモがありません</p>
+			<!--検索結果が０だった時もここ-->
+            <p th:text="${keyword != null and !keyword.isBlank()} ? '検索結果がありません' : 'メモがありません'">メモがありません</p>
             <a th:href="@{/memos/new}" class="btn btn-primary">新しいメモを作成</a>
         </div>
     </div>
