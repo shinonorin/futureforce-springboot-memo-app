@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+//URLから検索キーワードを受け取るアノテーション↓
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.lesson.memo.model.Memo;
 import com.lesson.memo.model.Priority;
@@ -37,6 +39,26 @@ public class MemoController {
         memos.sort((a, b) -> a.getPriority().compareTo(b.getPriority()));
         model.addAttribute("memos", memos);
         return "memo-list";
+    }
+    
+//    キーワード検索
+    @GetMapping("/search")
+    public String search(
+//    		@RequestParamブラウザから送られた検索キーワードを引数として受け取る
+    		@RequestParam(name = "keyword",defaultValue = "")String keyword,Model model) {
+    			List<Memo> memos;
+    			if(keyword.isBlank()) {
+//    				検索キーワードが空の場合全てのメモを取得
+    				memos = memoRepository.findAll();
+    			}else {
+    				memos = memoRepository.findByTitleContainingOrContentContaining(
+    						keyword,keyword);
+    			}
+    			memos.sort((a,b) -> a.getPriority().compareTo(b.getPriority()));
+    			model.addAttribute("memos",memos);
+    			model.addAttribute("keyword",keyword);
+    			
+    			return "memo-list";
     }
 
     @GetMapping("/new")
