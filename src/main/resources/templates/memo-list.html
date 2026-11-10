@@ -17,6 +17,10 @@
                 <i class="ri-add-circle-line"></i> 新規メモ
             </a>
         </div>
+		<!-- ログアウトボタン -->
+		<form th:action="@{/admin/logout}" method="post">
+		    <button type="submit">ログアウト</button>
+		</form>
 		<!--検索フォーム-->
 		<form th:action="@{/memos/search}" method="get"> <!--検索キーワードの送信先、URLにキーワードをつけて送信-->
 			<input type="text" name="keyword" th:value="${keyword}" placeholder="タイトル・本文を検索"><!--placeholder入力欄に薄く表示する文-->
