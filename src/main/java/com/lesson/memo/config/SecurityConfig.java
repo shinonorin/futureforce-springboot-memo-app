@@ -25,7 +25,7 @@ public class SecurityConfig {
 	    http.formLogin(form -> form
 	    		.loginPage("/admin/signin")
 	    	    .loginProcessingUrl("/admin/signin")
-	    	    .defaultSuccessUrl("/memo", true)
+	    	    .defaultSuccessUrl("/memos", true)
 	    	    .failureUrl("/admin/signin?error")
 	    	    .permitAll()
 	    );
